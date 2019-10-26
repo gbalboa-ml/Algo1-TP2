@@ -12,3 +12,12 @@ TEST(revertirAudioValidoTEST, unCanal){
 
     ASSERT_VECTOR(revertirAudio(a, canal, profundidad), esperado);
 }
+
+TEST(revertirAudioValidoTEST, dosCanales){
+    audio a = {1,2,3,4,-5,-2,-10,0};
+    int canal = 2;
+    int profundidad = 6;
+    audio esperado = {-10,0,-5,-2,3,4,1,2};
+
+    ASSERT_VECTOR(revertirAudio(a, canal, profundidad), esperado);
+}

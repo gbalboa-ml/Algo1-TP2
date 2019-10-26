@@ -10,6 +10,10 @@ bool cumplePreReplicar(audio vector, int canal, int profundidad);
 
 void replicarEnCanal(const audio &a, int canal, audio &replica, int i);
 
+bool cumplePreRevertir(audio a, int canal, int profundidad);
+
+void revertirBloque(const audio &a, int canal, audio &revertido, int i);
+
 using namespace std;
 
 bool formatoValido(audio a, int canal, int profundidad) {
@@ -49,7 +53,25 @@ bool cumplePreReplicar(audio a, int canal, int profundidad) {
 }
 
 audio revertirAudio(audio a, int canal, int profundidad) {
-    return a;
+    if (cumplePreRevertir(a, canal, profundidad)) {
+        audio revertido;
+        for (int i = 0; i < a.size() / canal; ++i) {
+            revertirBloque(a, canal, revertido, i);
+        }
+        return revertido;
+    } else {
+        return a;
+    }
+}
+
+void revertirBloque(const audio &a, int canal, audio &revertido, int i) {
+    for (int j = 0; j < canal; ++j) {
+        revertido.push_back(a[a.size() - canal * (i+1) + j]);
+    }
+}
+
+bool cumplePreRevertir(audio a, int canal, int profundidad) {
+    return canal > 0 && profundidad > 0 && formatoValido(a, canal, profundidad);
 }
 
 void magnitudAbsolutaMaxima(audio a, int canal, int profundidad, vector<int> &maximos, vector<int> &posicionesMaximos) {
