@@ -6,6 +6,10 @@ bool enRangoProfundidad(audio vector, int profundidad);
 
 double limiteProfundidad(int p);
 
+bool cumplePreReplicar(audio vector, int canal, int profundidad);
+
+void replicarEnCanal(const audio &a, int canal, audio &replica, int i);
+
 using namespace std;
 
 bool formatoValido(audio a, int canal, int profundidad) {
@@ -23,7 +27,25 @@ bool enRangoProfundidad(audio a, int p) {
 double limiteProfundidad(int p) { return pow ((double)2, (double)(p - 1)); }
 
 audio replicar(audio a, int canal, int profundidad) {
-    return a;
+    if (cumplePreReplicar(a, canal, profundidad)){
+        audio replica;
+        for (int i = 0; i < a.size(); ++i) {
+            replicarEnCanal(a, canal, replica, i);
+        }
+        return replica;
+    } else {
+        return a;
+    };
+}
+
+void replicarEnCanal(const audio &a, int canal, audio &replica, int i) {
+    for (int j = i * canal; j < (i + 1) * canal; ++j) {
+        replica.push_back(a[i]);
+    }
+}
+
+bool cumplePreReplicar(audio a, int canal, int profundidad) {
+    return canal > 0 && profundidad > 0 && formatoValido(a, 1, profundidad);
 }
 
 audio revertirAudio(audio a, int canal, int profundidad) {
