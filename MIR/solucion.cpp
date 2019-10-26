@@ -14,6 +14,10 @@ bool cumplePreRevertir(audio a, int canal, int profundidad);
 
 void revertirBloque(const audio &a, int canal, audio &revertido, int i);
 
+bool cumplePreMagnitudAbsMax(audio vector, int canal, int profundidad);
+
+void maximosPorCanal(const audio &a, int canal, int i, vector<int> &maximos, vector<int> &posicionesMaximos);
+
 using namespace std;
 
 bool formatoValido(audio a, int canal, int profundidad) {
@@ -75,7 +79,28 @@ bool cumplePreRevertir(audio a, int canal, int profundidad) {
 }
 
 void magnitudAbsolutaMaxima(audio a, int canal, int profundidad, vector<int> &maximos, vector<int> &posicionesMaximos) {
+    if (cumplePreMagnitudAbsMax(a, canal, profundidad)){
+        for (int i = 0; i < canal; ++i) {
+            maximos.push_back(0);
+            posicionesMaximos.push_back(i);
+            maximosPorCanal(a, canal, i, maximos, posicionesMaximos);
+        }
+    }
+}
 
+//Como no especifica, si hay dos máximos decidimos tomar el último que encontramos (por eso el menor o igual en el if en lugar de menor)
+void maximosPorCanal(const audio &a, int canal, int i, vector<int> &maximos, vector<int> &posicionesMaximos) {
+    for (int j = 0; j < a.size() / canal; ++j) {
+        int posicion = canal * j + i;
+        if (abs(maximos[i]) <= abs(a [posicion])){
+            maximos[i] = a[posicion];
+            posicionesMaximos[i] = posicion;
+        }
+    }
+}
+
+bool cumplePreMagnitudAbsMax(audio a, int canal, int profundidad) {
+    return canal > 0 && profundidad > 0 && formatoValido(a, canal, profundidad);
 }
 
 audio redirigir(audio a, int canal, int profundidad) {
