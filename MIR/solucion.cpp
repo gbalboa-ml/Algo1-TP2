@@ -20,6 +20,14 @@ bool cumplePreMagnitudAbsMax(audio vector, int canal, int profundidad);
 
 void maximosPorCanal(const audio &a, int canal, int i, vector<int> &maximos, vector<int> &posicionesMaximos);
 
+int abs(int n) {
+    if (n<0) {
+        return -n;
+    } else {
+        return n;
+    }
+}
+
 using namespace std;
 
 bool formatoValido(audio a, int canal, int profundidad) {
@@ -214,7 +222,7 @@ bool esOutlier(vector<int> a, int n) {
     bool resultado = false;
     int menores = 0;
     for (int i=0; i<a.size(); i++) {
-        if (n>a[i]) {
+        if (abs(n)>abs(a[i])) {
             menores++;
         }
     }
