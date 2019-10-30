@@ -2,6 +2,7 @@
 #include "auxiliares.h"
 #include <algorithm>
 #include <vector>
+#include <tuple>
 #include <math.h>
 
 bool enRangoProfundidad(audio vector, int profundidad);
@@ -156,8 +157,35 @@ void bajaCalidadAudio(vector<int> &a, int p, int p2) {
     }
 }
 
-void audiosSoftYHard(vector<audio> as, int profundidad, int longitud, int umbral, vector<audio>& soft, vector<audio>& hard) {
+// EJ 7
+bool esSoft(vector<int> a, int largo, int umbral) {
+    int superiores = 0;
+    for (int i=0; i<a.size() && superiores != largo; i++) {
+        if (a[i]>umbral) {
+            superiores += 1;
+        } else {
+            superiores = 0;
+        }
+    }
+    if (superiores == largo) {
+        return false;
+    } else {
+        return true;
+    }
+}
 
+tuple<vector<vector<int>>, vector<vector<int>>> audiosSoftYHard(vector<vector<int>> sa, int p, int largo, int umbral) {
+    vector<vector<int>> soft = {};
+    vector<vector<int>> hard = {};
+    for(int audio=0; audio<sa.size(); audio++) {
+        if (esSoft(sa[audio],largo,umbral)) {
+            soft.push_back(sa[audio]);
+        } else {
+            hard.push_back(sa[audio]);
+        }
+    }
+    auto seqSoftHard = make_tuple(soft,hard);
+    return seqSoftHard;
 }
 
 // EJ 8
@@ -200,8 +228,43 @@ vector<int> concat (vector<int> v1, vector<int> v2) {
     return concatenado;
 }
 
-void maximosTemporales(audio a, int profundidad, vector<int> tiempos, vector<int>& maximos, vector<pair<int,int> > &intervalos ) {
+// EJ 9
+int encontrarMaximo(vector<int> &a, int desde, int hasta, int cota_min) {
+    int max = cota_min;
+    for (int i=desde; i<=hasta && i<a.size(); i++) {
+        if (a[i] > max) {
+            max = a[i];
+        }
+    }
+    return max;
+}
 
+void agregarMaximo(vector<int> &maximos, vector<int> &a, tuple<int,int> intervalo, int cota_min) {  
+    int desde = get<0>(intervalo);
+    int hasta = get<1>(intervalo);
+    int maximo = encontrarMaximo(a,desde,hasta,cota_min);
+    maximos.push_back(maximo);
+}
+
+void agregarIntervalos(vector<tuple<int,int>> &intervalos, int size, int t) {
+    for (int i=0; i<size; i=i+t) {
+        auto intervalo = make_tuple(i,i+t-1);
+        intervalos.push_back(intervalo);
+    }
+}
+
+tuple<vector<int>, vector<tuple<int,int>>> maximosTemporales(vector<int> a, int p, vector<int> tiempos) {
+    vector<tuple<int,int>> intervalos = {};
+    vector<int> maximos = {};
+    int cota_min = pow(-2, p-1);
+    for (int t=0; t<tiempos.size(); t++) {
+        agregarIntervalos(intervalos, a.size(), tiempos[t]);
+    }
+    for (int i=0; i<intervalos.size(); i++) {
+        agregarMaximo(maximos, a, intervalos[i], cota_min);
+    }
+    auto resultado = make_tuple(maximos,intervalos);
+    return resultado;
 }
 
 // EJ 10
