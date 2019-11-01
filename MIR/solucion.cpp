@@ -160,18 +160,14 @@ void bajaCalidadAudio(vector<int> &a, int p, int p2) {
 // EJ 7
 bool esSoft(vector<int> a, int largo, int umbral) {
     int superiores = 0;
-    for (int i=0; i<a.size() && superiores != largo; i++) {
+    for (int i=0; i<a.size() && !(superiores > largo); i++) {
         if (a[i]>umbral) {
-            superiores += 1;
+            superiores++;
         } else {
             superiores = 0;
         }
     }
-    if (superiores == largo) {
-        return false;
-    } else {
-        return true;
-    }
+    return !(superiores > largo);
 }
 
 tuple<vector<vector<int>>, vector<vector<int>>> audiosSoftYHard(vector<vector<int>> sa, int p, int largo, int umbral) {
@@ -211,16 +207,11 @@ void reemplazarSubAudio(vector<int> &a, vector<int> a1, vector<int> a2, int p) {
 }
 
 bool enSubAudio(vector<int> audio, int i, vector<int> subaudio) {
-    bool esSubAudio = false;
-    for (int j=0; j<subaudio.size(); j++) {
-        if (subaudio[j] == audio[i+j]) {
-            esSubAudio = true;
-        } else {
-            esSubAudio = false;
-            break;
-        }
+    int j=0;
+    while (j<subaudio.size() && subaudio[j] == audio[i+j]) {
+        j++;
     }
-    return esSubAudio;
+    return !(j<subaudio.size());
 }
 
 vector<int> concat (vector<int> v1, vector<int> v2) {
