@@ -190,9 +190,10 @@ tuple<vector<vector<int>>, vector<vector<int>>> audiosSoftYHard(vector<vector<in
 
 // EJ 8
 void reemplazarSubAudio(vector<int> &a, vector<int> a1, vector<int> a2, int p) {
-    vector<int> reemplazo;
+    vector<int> reemplazo = {};
     int reinicio;
-    for (int i=0; i<a.size(); i++) {
+    int i;
+    for (i=0; i<a.size(); i++) {
         if (!enSubAudio(a,i,a1)) {
             reemplazo.push_back(a[i]);
         } else {
@@ -200,9 +201,11 @@ void reemplazarSubAudio(vector<int> &a, vector<int> a1, vector<int> a2, int p) {
             break;
         }
     }
-    reemplazo = concat(reemplazo,a2);
-    for (int i=reinicio; i<a.size(); i++) {
-        reemplazo.push_back(a[i]);
+    if (i<a.size()) {
+        reemplazo = concat(reemplazo,a2);
+        for (int j=reinicio; j<a.size(); j++) {
+            reemplazo.push_back(a[j]);
+        }   
     }
     a = reemplazo;
 }
