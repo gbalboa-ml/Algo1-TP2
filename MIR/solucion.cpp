@@ -271,22 +271,12 @@ void limpiarAudio(vector<int> &a, int profundidad, vector<int> &atipicos) {
 }
 
 bool esOutlier(vector<int> a, int n, int percentil) {
-    //for (int j = 0; j < a.size(); ++j) {
-        if (abs(n) > abs(percentil)){
+    if (a.size() == 1) return false;
+    sort(a.begin(), a.end());
+        if (abs(n) >= abs(a[percentil])){
             return true;
         }
-    //}
     return false;
-    /*int menores = 0;
-    for (int i=0; i<a.size(); i++) {
-        if (abs(n)>abs(a[i])) {
-            menores++;
-        }
-    }
-    if (menores >= (int) floor(0.95*a.size())) {
-        resultado = true;
-    }
-    return resultado;*/
 }
 
 bool esPosAtipica(vector<int> atipicos, int i) {

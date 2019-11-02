@@ -19,10 +19,23 @@ TEST(limpiarAudioTEST, audioSinOutliers){
 
 TEST(limpiarAudioTEST, audioConOutliers){
     audio a = {5,6,3,5,4,8,5,3,2,5,67,4,7,4};
-    audio outliers = {67};
+    audio outliers;
     int profundidad = 6;
-    audio audioEsperado = {5,6,3,5,4,8,5,3,2,5,4,7,4};
-    audio outliersEsperado = {67};
+    audio audioEsperado = {5,6,3,5,4,8,5,3,2,5,4,4,7,4};
+    audio outliersEsperado = {10};
+
+    limpiarAudio(a, profundidad, outliers);
+
+    ASSERT_VECTOR(a, audioEsperado);
+    ASSERT_VECTOR(outliers, outliersEsperado);
+}
+
+TEST(limpiarAudioTEST, audioConOutliers2){
+    audio a = {5,6,3,5,4,8,42,3,2,5,67,4,7,4};
+    audio outliers;
+    int profundidad = 6;
+    audio audioEsperado = {5,6,3,5,4,8,42,3,2,5,4,4,7,4};
+    audio outliersEsperado = {10};
 
     limpiarAudio(a, profundidad, outliers);
 
