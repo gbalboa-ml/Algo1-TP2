@@ -170,9 +170,7 @@ bool esSoft(vector<int> a, int largo, int umbral) {
     return !(superiores > largo);
 }
 
-tuple<vector<vector<int>>, vector<vector<int>>> audiosSoftYHard(vector<vector<int>> sa, int p, int largo, int umbral) {
-    vector<vector<int>> soft = {};
-    vector<vector<int>> hard = {};
+void audiosSoftYHard(vector<vector<int>> sa, int p, int largo, int umbral, vector<vector<int>> &soft, vector<vector<int>> &hard) {
     for(int audio=0; audio<sa.size(); audio++) {
         if (esSoft(sa[audio],largo,umbral)) {
             soft.push_back(sa[audio]);
@@ -180,8 +178,6 @@ tuple<vector<vector<int>>, vector<vector<int>>> audiosSoftYHard(vector<vector<in
             hard.push_back(sa[audio]);
         }
     }
-    auto seqSoftHard = make_tuple(soft,hard);
-    return seqSoftHard;
 }
 
 // EJ 8
@@ -262,31 +258,35 @@ tuple<vector<int>, vector<tuple<int,int>>> maximosTemporales(vector<int> a, int 
 }
 
 // EJ 10
-vector<int> limpiarAudio(vector<int> &a) {
-    vector<int> atipicos = {};
+void limpiarAudio(vector<int> &a, int profundidad, vector<int> &atipicos) {
+    int percentil = (int) floor(0.95 * a.size());
     for (int i=0; i<a.size(); i++) {
-        if (esOutlier(a, a[i])) {
+        if (esOutlier(a, a[i], percentil)) {
             atipicos.push_back(i);
         }
     }
     for (int i=0; i<atipicos.size(); i++) {
         a[atipicos[i]] = reemplazoNoOutlier(a,atipicos[i],atipicos);
     }
-    return atipicos;
 }
 
-bool esOutlier(vector<int> a, int n) {
-    bool resultado = false;
-    int menores = 0;
+bool esOutlier(vector<int> a, int n, int percentil) {
+    //for (int j = 0; j < a.size(); ++j) {
+        if (abs(n) > abs(percentil)){
+            return true;
+        }
+    //}
+    return false;
+    /*int menores = 0;
     for (int i=0; i<a.size(); i++) {
         if (abs(n)>abs(a[i])) {
             menores++;
         }
     }
-    if (menores >= floor(0.95*a.size())) {
+    if (menores >= (int) floor(0.95*a.size())) {
         resultado = true;
     }
-    return resultado;
+    return resultado;*/
 }
 
 bool esPosAtipica(vector<int> atipicos, int i) {

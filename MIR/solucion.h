@@ -11,7 +11,13 @@ audio redirigir(audio a, int canal, int profundidad);
 void bajarCalidad(vector<audio> & as, int profundidad1, int profundidad2);
 void audiosSoftYHard(vector<audio> as, int profundidad, int longitud, int umbral, vector<audio>& soft, vector<audio>& hard);
 void reemplazarSubAudio(audio& a, audio a1, audio a2, int profundidad);
-void maximosTemporales(audio a, int profundidad, vector<int> tiempos, vector<int>& maximos, vector<pair<int,int> > &intervalos );
 void limpiarAudio(audio& a, int profundidad, vector<int>& outliers);
+int clip(int n, int p);
+void bajarCalidad(vector<vector<int>> &as, int p, int p2);
+bool enSubAudio(vector<int> audio, int i, vector<int> subaudio);
+bool esOutlier(vector<int> a, int n, int i);
+int reemplazoNoOutlier(vector<int> a, int i, vector<int> atipicos);
+void bajaCalidadAudio(vector<int> &a, int p, int p2);
+vector<int> concat (vector<int> v1, vector<int> v2);
 
 #endif //RECUPERACIONINFORMACIONMUSICAL_SOLUCION_H
