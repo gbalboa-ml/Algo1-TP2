@@ -7,19 +7,15 @@
 
 bool enRangoProfundidad(audio vector, int profundidad);
 
-double limiteProfundidad(int p);
-
-bool cumplePreReplicar(audio vector, int canal, int profundidad);
+int limiteProfundidad(int p);
 
 void replicarEnCanal(const audio &a, int canal, audio &replica, int i);
 
-bool cumplePreRevertir(audio a, int canal, int profundidad);
-
 void revertirBloque(const audio &a, int canal, audio &revertido, int i);
 
-bool cumplePreMagnitudAbsMax(audio vector, int canal, int profundidad);
-
 void maximosPorCanal(const audio &a, int canal, int i, vector<int> &maximos, vector<int> &posicionesMaximos);
+
+double disminuirEn(int p, int p2);
 
 int abs(int n) {
     if (n<0) {
@@ -43,18 +39,14 @@ bool enRangoProfundidad(audio a, int p) {
     return res;
 }
 
-double limiteProfundidad(int p) { return pow ((double)2, (double)(p - 1)); }
+int limiteProfundidad(int p) { return (int)pow ((double)2, (double)(p - 1)); }
 
 audio replicar(audio a, int canal, int profundidad) {
-    if (cumplePreReplicar(a, canal, profundidad)){
         audio replica;
         for (int i = 0; i < a.size(); ++i) {
             replicarEnCanal(a, canal, replica, i);
         }
         return replica;
-    } else {
-        return a;
-    };
 }
 
 void replicarEnCanal(const audio &a, int canal, audio &replica, int i) {
@@ -63,20 +55,12 @@ void replicarEnCanal(const audio &a, int canal, audio &replica, int i) {
     }
 }
 
-bool cumplePreReplicar(audio a, int canal, int profundidad) {
-    return canal > 0 && profundidad > 0 && formatoValido(a, 1, profundidad);
-}
-
 audio revertirAudio(audio a, int canal, int profundidad) {
-    if (cumplePreRevertir(a, canal, profundidad)) {
         audio revertido;
         for (int i = 0; i < a.size() / canal; ++i) {
             revertirBloque(a, canal, revertido, i);
         }
         return revertido;
-    } else {
-        return a;
-    }
 }
 
 void revertirBloque(const audio &a, int canal, audio &revertido, int i) {
@@ -85,17 +69,11 @@ void revertirBloque(const audio &a, int canal, audio &revertido, int i) {
     }
 }
 
-bool cumplePreRevertir(audio a, int canal, int profundidad) {
-    return canal > 0 && profundidad > 0 && formatoValido(a, canal, profundidad);
-}
-
 void magnitudAbsolutaMaxima(audio a, int canal, int profundidad, vector<int> &maximos, vector<int> &posicionesMaximos) {
-    if (cumplePreMagnitudAbsMax(a, canal, profundidad)){
-        for (int i = 0; i < canal; ++i) {
-            maximos.push_back(0);
-            posicionesMaximos.push_back(i);
-            maximosPorCanal(a, canal, i, maximos, posicionesMaximos);
-        }
+    for (int i = 0; i < canal; ++i) {
+        maximos.push_back(0);
+        posicionesMaximos.push_back(i);
+        maximosPorCanal(a, canal, i, maximos, posicionesMaximos);
     }
 }
 
@@ -110,20 +88,13 @@ void maximosPorCanal(const audio &a, int canal, int i, vector<int> &maximos, vec
     }
 }
 
-bool cumplePreMagnitudAbsMax(audio a, int canal, int profundidad) {
-    return canal > 0 && profundidad > 0 && formatoValido(a, canal, profundidad);
-}
-
 // EJ 5
 vector<int> redirigir(vector<int> a, int c, int p) {
-    int inicio;
-    int direccion;
+    int inicio = 1; // me ubico en el canal 1 por defecto
+    int direccion = -1;
     vector<int> result = a;
-    if (c==1) {
-        inicio = 1; // me ubico en el canal 2
-        direccion = -1;
-    } else if (c==2) {
-        inicio = 0; // me ubico en el canal 1
+    if (c==2) {
+        inicio = 0;
         direccion = 1;
     }
     for (int i=inicio; i<a.size(); i=i+2) {
@@ -133,8 +104,8 @@ vector<int> redirigir(vector<int> a, int c, int p) {
 }
 
 int clip(int n, int p) {
-    int cota_min = pow(-2, p-1);
-    int cota_max = pow(2, p-1)-1;
+    int cota_min = - limiteProfundidad(p);
+    int cota_max = limiteProfundidad(p)-1;
     if (n>cota_max) {
         return cota_max;
     } else if (n<cota_min) {
@@ -145,17 +116,19 @@ int clip(int n, int p) {
 }
 
 // EJ 6
-void bajarCalidad(vector<vector<int>> &as, int p, int p2) {
-    for (int i=0; i<as.size(); i++) {
-        bajaCalidadAudio(as[i],p,p2);
+void bajarCalidad(vector<audio> &as, int p, int p2) {
+    for (audio &a : as) {
+        bajaCalidadAudio(a,p,p2);
     }
 }
 
 void bajaCalidadAudio(vector<int> &a, int p, int p2) {
-    for (int i=0; i<a.size(); i++) {
-        a[i] = floor(a[i]/pow(2,p-p2));
+    for (int &i : a) {
+        i = floor(i / disminuirEn(p, p2));
     }
 }
+
+double disminuirEn(int p, int p2) { return pow((double)2, (double)p - p2); }
 
 // EJ 7
 bool esSoft(vector<int> a, int largo, int umbral) {
