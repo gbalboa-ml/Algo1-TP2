@@ -53,3 +53,11 @@ void ASSERT_VECTOR(vector<int> vector1, vector<int> vector2) {
 void ASSERT_MATRIX(vector<audio> mat1, vector<audio> mat2) {
     ASSERT_TRUE(matricesIguales(mat1, mat2));
 }
+
+/*
+void ASSERT_VECTOR_TUPLES(vector<tuple<int,int>> vector1, vector<tuple<int,int>> vector2){
+    sort(vector1.begin(), vector1.end());
+    sort(vector2.begin(), vector2.end());
+
+    ASSERT_TRUE(vectoresOrdenadosIguales(vector1, vector2));
+}*/

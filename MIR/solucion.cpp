@@ -216,9 +216,8 @@ void agregarIntervalos(vector<tuple<int,int>> &intervalos, int size, int t) {
     }
 }
 
-tuple<vector<int>, vector<tuple<int,int>>> maximosTemporales(vector<int> a, int p, vector<int> tiempos) {
-    vector<tuple<int,int>> intervalos = {};
-    vector<int> maximos = {};
+void maximosTemporales(vector<int> a, int p, vector<int> tiempos, vector<tuple<int,int>> &intervalos, vector<int> &maximos) {
+
     int cota_min = pow(-2, p-1);
     for (int t=0; t<tiempos.size(); t++) {
         agregarIntervalos(intervalos, a.size(), tiempos[t]);
@@ -226,8 +225,6 @@ tuple<vector<int>, vector<tuple<int,int>>> maximosTemporales(vector<int> a, int 
     for (int i=0; i<intervalos.size(); i++) {
         agregarMaximo(maximos, a, intervalos[i], cota_min);
     }
-    auto resultado = make_tuple(maximos,intervalos);
-    return resultado;
 }
 
 // EJ 10
