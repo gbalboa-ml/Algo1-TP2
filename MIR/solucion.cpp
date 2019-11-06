@@ -179,7 +179,7 @@ void reemplazarSubAudio(vector<int> &a, vector<int> a1, vector<int> a2, int p) {
 
 bool enSubAudio(vector<int> audio, int i, vector<int> subaudio) {
     int j=0;
-    while (j<subaudio.size() && subaudio[j] == audio[i+j]) {
+    while (j<subaudio.size() && i+j<audio.size() && subaudio[j] == audio[i+j]) {
         j++;
     }
     return !(j<subaudio.size());
