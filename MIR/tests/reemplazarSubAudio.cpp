@@ -27,3 +27,27 @@ TEST(reemplazarSubAudioTEST, VariosElementosYPresentes){
 
     ASSERT_VECTOR(a, esperado);
 }
+
+TEST(reemplazarSubAudioTEST, listaConSubAudio){
+    audio a = {1,2,3,4,5};
+    audio a1 = {2,3,4};
+    audio a2 = {6,7};
+    int profundidad = 8;
+    audio esperado = {1,6,7,5};
+
+    reemplazarSubAudio(a, a1, a2, profundidad);
+
+    ASSERT_VECTOR(a, esperado);
+}
+
+TEST(reemplazarSubAudioTEST, listaSinSubAudio){
+    audio a = {1,2,3,4,5};
+    audio a1 = {6,7,8};
+    audio a2 = {9,10};
+    int profundidad = 8;
+    audio esperado = {1,2,3,4,5};
+
+    reemplazarSubAudio(a, a1, a2, profundidad);
+
+    ASSERT_VECTOR(a, esperado);
+}

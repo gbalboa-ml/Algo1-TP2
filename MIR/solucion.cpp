@@ -17,6 +17,8 @@ void maximosPorCanal(const audio &a, int canal, int i, vector<int> &maximos, vec
 
 double disminuirEn(int p, int p2);
 
+vector<int> copyArray(vector<int> &vector);
+
 int abs(int n) {
     if (n<0) {
         return -n;
@@ -230,8 +232,10 @@ void maximosTemporales(vector<int> a, int p, vector<int> tiempos, vector<tuple<i
 // EJ 10
 void limpiarAudio(vector<int> &a, int profundidad, vector<int> &atipicos) {
     int percentil = (int) floor(0.95 * a.size());
+    vector<int> audioOrdenado = copyArray(a);
+    sort(audioOrdenado.begin(), audioOrdenado.end());
     for (int i=0; i<a.size(); i++) {
-        if (esOutlier(a, a[i], percentil)) {
+        if (esOutlier(audioOrdenado, a[i], percentil)) {
             atipicos.push_back(i);
         }
     }
@@ -240,13 +244,19 @@ void limpiarAudio(vector<int> &a, int profundidad, vector<int> &atipicos) {
     }
 }
 
+vector<int> copyArray(vector<int> &a) {
+    vector<int> copia;
+    copia.reserve(a.size());
+    for (int i : a) {
+        copia.push_back(i);
+    }
+    return copia;
+}
+
 bool esOutlier(vector<int> a, int n, int percentil) {
     if (a.size() == 1) return false;
     sort(a.begin(), a.end());
-        if (abs(n) >= abs(a[percentil])){
-            return true;
-        }
-    return false;
+    return abs(n) > abs(a[percentil]);
 }
 
 bool esPosAtipica(vector<int> atipicos, int i) {

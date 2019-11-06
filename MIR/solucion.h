@@ -19,6 +19,6 @@ bool esOutlier(vector<int> a, int n, int i);
 int reemplazoNoOutlier(vector<int> a, int i, vector<int> atipicos);
 void bajaCalidadAudio(vector<int> &a, int p, int p2);
 vector<int> concat (vector<int> v1, vector<int> v2);
-void maximosTemporales(vector<int> a, int p, vector<int> tiempos, vector<tuple<int,int>> &intervalos, vector<int> &maximos)
+void maximosTemporales(vector<int> a, int p, vector<int> tiempos, vector<tuple<int,int>> &intervalos, vector<int> &maximos);
 
 #endif //RECUPERACIONINFORMACIONMUSICAL_SOLUCION_H
