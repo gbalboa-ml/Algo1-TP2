@@ -15,6 +15,7 @@ int abs(int n) {
 
 using namespace std;
 
+// EJ 1
 bool formatoValido(audio a, int canal, int profundidad) {
     return a.size() > 0 && a.size() % canal == 0 && enRangoProfundidad(a, profundidad);
 }
@@ -29,12 +30,13 @@ bool enRangoProfundidad(audio a, int p) {
 
 int limiteProfundidad(int p) { return (int)pow ((double)2, (double)(p - 1)); }
 
+// EJ 2
 audio replicar(audio a, int canal, int profundidad) {
-        audio replica;
-        for (int i = 0; i < a.size(); ++i) {
-            replicarEnCanal(a, canal, replica, i);
-        }
-        return replica;
+    audio replica;
+    for (int i = 0; i < a.size(); ++i) {
+        replicarEnCanal(a, canal, replica, i);
+    }
+    return replica;
 }
 
 void replicarEnCanal(const audio &a, int canal, audio &replica, int i) {
@@ -43,12 +45,13 @@ void replicarEnCanal(const audio &a, int canal, audio &replica, int i) {
     }
 }
 
+// EJ 3
 audio revertirAudio(audio a, int canal, int profundidad) {
-        audio revertido;
-        for (int i = 0; i < a.size() / canal; ++i) {
-            revertirBloque(a, canal, revertido, i);
-        }
-        return revertido;
+    audio revertido;
+    for (int i = 0; i < a.size() / canal; ++i) {
+        revertirBloque(a, canal, revertido, i);
+    }
+    return revertido;
 }
 
 void revertirBloque(const audio &a, int canal, audio &revertido, int i) {
@@ -57,6 +60,7 @@ void revertirBloque(const audio &a, int canal, audio &revertido, int i) {
     }
 }
 
+// EJ 4
 void magnitudAbsolutaMaxima(audio a, int canal, int profundidad, vector<int> &maximos, vector<int> &posicionesMaximos) {
     for (int i = 0; i < canal; ++i) {
         maximos.push_back(0);
@@ -77,10 +81,10 @@ void maximosPorCanal(const audio &a, int canal, int i, vector<int> &maximos, vec
 }
 
 // EJ 5
-vector<int> redirigir(vector<int> a, int c, int p) {
-    int inicio = 1; // me ubico en el canal 1 por defecto
+audio redirigir(audio a, int c, int p) {
+    int inicio = 1; // me ubico en el canal 2 por defecto
     int direccion = -1;
-    vector<int> result = a;
+    audio result = a;
     if (c==2) {
         inicio = 0;
         direccion = 1;
@@ -110,7 +114,7 @@ void bajarCalidad(vector<audio> &as, int p, int p2) {
     }
 }
 
-void bajaCalidadAudio(vector<int> &a, int p, int p2) {
+void bajaCalidadAudio(audio &a, int p, int p2) {
     for (int &i : a) {
         i = floor(i / disminuirEn(p, p2));
     }
@@ -119,7 +123,7 @@ void bajaCalidadAudio(vector<int> &a, int p, int p2) {
 double disminuirEn(int p, int p2) { return pow((double)2, (double)p - p2); }
 
 // EJ 7
-bool esSoft(vector<int> a, int largo, int umbral) {
+bool esSoft(audio a, int largo, int umbral) {
     int superiores = 0;
     for (int i=0; i<a.size() && !(superiores > largo); i++) {
         if (a[i]>umbral) {
@@ -131,7 +135,7 @@ bool esSoft(vector<int> a, int largo, int umbral) {
     return !(superiores > largo);
 }
 
-void audiosSoftYHard(vector<vector<int>> sa, int p, int largo, int umbral, vector<vector<int>> &soft, vector<vector<int>> &hard) {
+void audiosSoftYHard(vector<audio> sa, int p, int largo, int umbral, vector<audio> &soft, vector<audio> &hard) {
     for(int audio=0; audio<sa.size(); audio++) {
         if (esSoft(sa[audio],largo,umbral)) {
             soft.push_back(sa[audio]);
@@ -142,15 +146,16 @@ void audiosSoftYHard(vector<vector<int>> sa, int p, int largo, int umbral, vecto
 }
 
 // EJ 8
-void reemplazarSubAudio(vector<int> &a, vector<int> a1, vector<int> a2, int p) {
-    vector<int> reemplazo = {};
+void reemplazarSubAudio(audio &a, audio a1, audio a2, int p) {
+    audio reemplazo = {};
     int reinicio;
     int i;
     for (i=0; i<a.size(); i++) {
         if (!enSubAudio(a,i,a1)) {
             reemplazo.push_back(a[i]);
         } else {
-            reinicio = i+a1.size();
+            reinicio = i+a1.size()
+                    ;
             break;
         }
     }
@@ -158,12 +163,12 @@ void reemplazarSubAudio(vector<int> &a, vector<int> a1, vector<int> a2, int p) {
         reemplazo = concat(reemplazo,a2);
         for (int j=reinicio; j<a.size(); j++) {
             reemplazo.push_back(a[j]);
-        }   
+        }
     }
     a = reemplazo;
 }
 
-bool enSubAudio(vector<int> audio, int i, vector<int> subaudio) {
+bool enSubAudio(audio audio, int i, vector<int> subaudio) {
     int j=0;
     while (j<subaudio.size() && i+j<audio.size() && subaudio[j] == audio[i+j]) {
         j++;
@@ -171,8 +176,8 @@ bool enSubAudio(vector<int> audio, int i, vector<int> subaudio) {
     return !(j<subaudio.size());
 }
 
-vector<int> concat (vector<int> v1, vector<int> v2) {
-    vector<int> concatenado = v1;
+audio concat (audio v1, audio v2) {
+    audio concatenado = v1;
     for (int i=0; i < v2.size(); i++) {
         concatenado.push_back(v2[i]);
     }
@@ -180,7 +185,7 @@ vector<int> concat (vector<int> v1, vector<int> v2) {
 }
 
 // EJ 9
-int encontrarMaximo(vector<int> &a, int desde, int hasta, int cota_min) {
+int encontrarMaximo(audio &a, int desde, int hasta, int cota_min) {
     int max = cota_min;
     for (int i=desde; i<=hasta && i<a.size(); i++) {
         if (a[i] > max) {
@@ -190,7 +195,7 @@ int encontrarMaximo(vector<int> &a, int desde, int hasta, int cota_min) {
     return max;
 }
 
-void agregarMaximo(vector<int> &maximos, vector<int> &a, tuple<int,int> intervalo, int cota_min) {  
+void agregarMaximo(vector<int> &maximos, audio &a, tuple<int,int> intervalo, int cota_min) {
     int desde = get<0>(intervalo);
     int hasta = get<1>(intervalo);
     int maximo = encontrarMaximo(a,desde,hasta,cota_min);
@@ -204,7 +209,7 @@ void agregarIntervalos(vector<tuple<int,int>> &intervalos, int size, int t) {
     }
 }
 
-void maximosTemporales(vector<int> a, int p, vector<int> tiempos, vector<tuple<int,int>> &intervalos, vector<int> &maximos) {
+void maximosTemporales(audio a, int p, vector<int> tiempos, vector<tuple<int,int>> &intervalos, vector<int> &maximos) {
 
     int cota_min = - pow(2, p-1);
     for (int t=0; t<tiempos.size(); t++) {
