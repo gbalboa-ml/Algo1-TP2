@@ -220,7 +220,7 @@ void agregarIntervalos(vector<tuple<int,int>> &intervalos, int size, int t) {
 
 void maximosTemporales(vector<int> a, int p, vector<int> tiempos, vector<tuple<int,int>> &intervalos, vector<int> &maximos) {
 
-    int cota_min = pow(-2, p-1);
+    int cota_min = - pow(2, p-1);
     for (int t=0; t<tiempos.size(); t++) {
         agregarIntervalos(intervalos, a.size(), tiempos[t]);
     }

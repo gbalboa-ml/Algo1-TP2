@@ -43,6 +43,16 @@ bool matricesIguales(vector<vector<int> > mat1, vector<vector<int> > mat2){
     return todasSusFilasEnLaOtraMatriz(mat1,mat2) && todasSusFilasEnLaOtraMatriz(mat2,mat1);
 }
 
+bool tuplasIguales(vector<tuple<int,int>> vector1, vector<tuple<int,int>> vector2){
+    if(vector1.size() != vector2.size())
+        return false;
+
+    for (int i = 0; i < vector1.size(); ++i)
+        if (vector1[i] != vector2[i]){return false;}
+
+    return true;
+}
+
 void ASSERT_VECTOR(vector<int> vector1, vector<int> vector2) {
     sort(vector1.begin(), vector1.end());
     sort(vector2.begin(), vector2.end());
@@ -54,10 +64,9 @@ void ASSERT_MATRIX(vector<audio> mat1, vector<audio> mat2) {
     ASSERT_TRUE(matricesIguales(mat1, mat2));
 }
 
-/*
 void ASSERT_VECTOR_TUPLES(vector<tuple<int,int>> vector1, vector<tuple<int,int>> vector2){
     sort(vector1.begin(), vector1.end());
     sort(vector2.begin(), vector2.end());
 
-    ASSERT_TRUE(vectoresOrdenadosIguales(vector1, vector2));
-}*/
+    ASSERT_TRUE(tuplasIguales(vector1, vector2));
+}
