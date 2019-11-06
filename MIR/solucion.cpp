@@ -255,7 +255,6 @@ vector<int> copyArray(vector<int> &a) {
 
 bool esOutlier(vector<int> a, int n, int percentil) {
     if (a.size() == 1) return false;
-    sort(a.begin(), a.end());
     return abs(n) > abs(a[percentil]);
 }
 
