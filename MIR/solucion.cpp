@@ -232,7 +232,7 @@ void maximosTemporales(vector<int> a, int p, vector<int> tiempos, vector<tuple<i
 // EJ 10
 void limpiarAudio(vector<int> &a, int profundidad, vector<int> &atipicos) {
     int percentil = (int) floor(0.95 * a.size());
-    vector<int> audioOrdenado = copyArray(a);
+    vector<int> audioOrdenado = a;
     sort(audioOrdenado.begin(), audioOrdenado.end());
     for (int i=0; i<a.size(); i++) {
         if (esOutlier(audioOrdenado, a[i], percentil)) {
@@ -242,15 +242,6 @@ void limpiarAudio(vector<int> &a, int profundidad, vector<int> &atipicos) {
     for (int i=0; i<atipicos.size(); i++) {
         a[atipicos[i]] = reemplazoNoOutlier(a,atipicos[i],atipicos);
     }
-}
-
-vector<int> copyArray(vector<int> &a) {
-    vector<int> copia;
-    copia.reserve(a.size());
-    for (int i : a) {
-        copia.push_back(i);
-    }
-    return copia;
 }
 
 bool esOutlier(vector<int> a, int n, int percentil) {
