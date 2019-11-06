@@ -34,7 +34,7 @@ bool esSoft(audio a, int largo, int umbral);
 
 // EJ 8
 void reemplazarSubAudio(audio& a, audio a1, audio a2, int p);
-bool enSubAudio(audio audio, int i, vector<int> subaudio);
+bool enSubAudio(audio a, int i, audio subaudio);
 audio concat (audio v1, audio v2);
 
 // EJ 9
