@@ -81,7 +81,7 @@ void calcularTiempoEjecucionRevertir(){
 }
 
 void calcularTiempoEjecucionLimpiar(){
-    int n = 0; int hasta = 10000; int paso = 1000;
+    int n = 0; int hasta = 10000; int paso = 500;
     ofstream fout;
     fout.open("datosLimpiar.csv");
     fout << "n\t" << "tiempo" <<endl;

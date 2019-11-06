@@ -1,143 +1,152 @@
 ### Acá se justifican los tiempos de ejecución del peor caso de los ejecicios pedidos ###
 
 
+1) Revertir Audio
+
 audio revertirAudio(audio a, int canal, int profundidad) {
-        audio revertido; // O(1)
-        for (int i = 0; i < a.size() / canal; ++i) { // ciclo externo
-            revertirBloque(a, canal, revertido, i); // ciclo interno
+        audio revertido;                                                // O(1)
+        for (int i = 0; i < a.size() / canal; ++i) {                    // ciclo externo
+            revertirBloque(a, canal, revertido, i);                     // ciclo interno
         }
-        return revertido; // O(n)
+        return revertido;                                               // O(n)
 }
 
 void revertirBloque(const audio &a, int canal, audio &revertido, int i) {
-    for (int j = 0; j < canal; ++j) { // ciclo interno
-        revertido.push_back(a[a.size() - canal * (i+1) + j]); // O(1)
+    for (int j = 0; j < canal; ++j) {                                   // ciclo interno
+        revertido.push_back(a[a.size() - canal * (i+1) + j]);           // O(1)
     }
 }
 
 Complejidad O(n), donde n representa la longitud del audio.
 
 El ciclo externo recorre la cantidad de subsecuencias a invertir (tamaño de la lista / total de canales).
-En cada una de esas iteraciones, el ciclo interno recorre los elementos de esa subsecuencia puntual (tantos como canales haya) y los va agregando al audio revertido.
+En cada una de esas iteraciones, el ciclo interno recorre los elementos de esa subsecuencia puntual (tantos como canales
+ haya) y los va agregando al audio revertido.
 
-Así, un audio de tamaño 10 y c=5, hará dos iteraciones en el ciclo externo y cinco en el interno: 2*5 = 10, tamaño del audio original.
-En términos genéricos: (n/c)*c = n.
+Así, un audio de tamaño 10 y c=5, hará dos iteraciones en el ciclo externo y cinco en el interno: 2*5 = 10, tamaño del
+audio original.
+En términos generales: (n/c)*c = n.
 
-En el (peor) caso de que el ciclo externo tenga que recorrer toda la lista (se pasa como parámetro c=1), el ciclo interno iterará solo una vez y se mantendrá la complejidad.
+En el (peor) caso de que el ciclo externo tenga que recorrer toda la lista (se pasa como parámetro c=1), el ciclo
+interno iterará solo una vez y se mantendrá la complejidad.
 Análogamente, en el peor caso del ciclo interno (c=|a|) se estará iterando una sola vez en el externo.
 
+------------------------------------------------------------------------------------------------------------------------
 
+2) Limpiar Audio
 
-void limpiarAudio(vector<int> &a, int profundidad, vector<int> &atipicos) {
-    int percentil = (int) floor(0.95 * a.size()); // O(1)
-    vector<int> audioOrdenado = a; // O(n)
-    sort(audioOrdenado.begin(), audioOrdenado.end()); // O(n2)
-    for (int i=0; i<a.size(); i++) { // primer ciclo externo
+void limpiarAudio(audio &a, int profundidad, vector<int> &atipicos) {
+    int percentil = (int) floor(0.95 * a.size());                                           // O(1)
+    audio audioOrdenado = a;                                                                // O(n)
+    audio audioLimpio = a;                                                                  // O(n)
+    selectionSort(audioOrdenado);                                                           // O(n²)
+    for (int i=0; i<a.size(); i++) {                                                        // primer ciclo externo
         if (esOutlier(audioOrdenado, a[i], percentil)) {
-            atipicos.push_back(i); // O(1)
+            atipicos.push_back(i);                                                          // O(1)
         }
     }
-    for (int i=0; i<atipicos.size(); i++) { // segundo ciclo externo
-        a[atipicos[i]] = reemplazoNoOutlier(a,atipicos[i],atipicos);
+    for (int i=0; i<atipicos.size(); i++) {                                                 // segundo ciclo externo
+        audioLimpio[atipicos[i]] = reemplazoNoOutlier(a,atipicos[i],audioOrdenado,percentil);
     }
+    a = audioLimpio;                                                                        // O(n)
 }
 
-bool esOutlier(vector<int> a, int n, int percentil) {
-    return abs(n) > abs(a[percentil]); // O(1)
+bool esOutlier(audio &audioOrdenado, int n, int percentil) {
+    return abs(n) > abs(audioOrdenado[percentil]);                                          // O(1)
 }
 
-bool esPosAtipica(vector<int> atipicos, int i) {
-    bool posAtipica = false; // O(1)
-    for (int j=0; j<atipicos.size(); j++) {
-        if (atipicos[j] == i) { // O(1)
-            posAtipica = true; // O(1)
-            break; // O(1)
-        }
-    }
-    return posAtipica; // O(1)
-}
-
-int posNoOutlierIzq (vector<int> a, int i, vector<int> atipicos) {
-    int resultado = -1;  // O(1)
-    while (i > 0) {
-        i--;
-        if (!esPosAtipica(atipicos, i)) {
-            resultado = i; // O(1)
-            break; // O(1)
-        }
-    }
-    return resultado; // O(1)
-}
-
-int posNoOutlierDer (vector<int> a, int i, vector<int> atipicos) {
-    int resultado = -1;  // O(1)
-    while (i < a.size()-1) {
-        i++;
-        if (!esPosAtipica(atipicos, i)) {
-            resultado = i; // O(1)
-            break; // O(1)
-        }
-    }
-    return resultado; // O(1)
-}
-
-int reemplazoNoOutlier(vector<int> a, int i, vector<int> atipicos) {
-    if (posNoOutlierIzq(a,i,atipicos) < 0) {
-        return a[posNoOutlierDer(a,i,atipicos)];
-    } else if (posNoOutlierDer(a,i,atipicos) < 0) {
-        return a[posNoOutlierIzq(a,i,atipicos)];
+int reemplazoNoOutlier(audio a, int i, audio audioOrdenado, int percentil) {
+    if (posNoOutlierIzq(audioOrdenado,a,i,percentil) < 0) {
+        return a[posNoOutlierDer(audioOrdenado,a,i,percentil)];                             // O(1)
+    } else if (posNoOutlierDer(audioOrdenado,a,i,percentil) < 0) {
+        return a[posNoOutlierIzq(audioOrdenado,a,i,percentil)];                             // O(1)
     } else {
-        return (floor((a[posNoOutlierIzq(a,i,atipicos)] + a[posNoOutlierDer(a,i,atipicos)]) / 2));
+        return (floor((a[posNoOutlierIzq(audioOrdenado,a,i,percentil)] + a[posNoOutlierDer(audioOrdenado,a,i,percentil)]) / 2)); // O(1)
     }
+}
+
+int posNoOutlierIzq (audio &audioOrdenado, audio &a, int i, int percentil) {
+    int resultado = -1;                                                                     // O(1)
+    while (i > 0) { // ciclo interno
+        i--; // O(1)
+        if (!esOutlier(audioOrdenado, a[i], percentil)) {                                   // O(1)
+            resultado = i;                                                                  // O(1)
+            break;                                                                          // O(1)
+        }
+    }
+    return resultado;                                                                       // O(1)
+}
+
+int posNoOutlierDer (audio &audioOrdenado, audio &a, int i, int percentil) { // cambio pasaje de parámetros
+    int resultado = -1;                                                                     // O(1)
+    while (i < a.size()-1) {                                                                // ciclo interno
+        i++; // O(1)
+        if (!esOutlier(audioOrdenado, a[i], percentil)) {                                   // O(1)
+            resultado = i;                                                                  // O(1)
+            break;                                                                          // O(1)
+        }
+    }
+    return resultado;                                                                       // O(1)
 }
 
 Complejidad O(n²), donde n representa la longitud del audio.
 
-El primer ciclo externo recorre todos los elementos del audio (O(n)) para preguntarse, en cada caso, si el valor "esOutlier" (O(1)).
+El primer ciclo externo recorre todos los elementos del audio (O(n)) para preguntarse, en cada caso,
+si el valor "esOutlier" (O(1)).
+
 El segundo ciclo externo itera sobre la lista de atípicos, de tamaño igual al 5% del audio original ((1/20)*n).
-Cada iteración reemplaza el elemento original por un No Outlier. Para ello, llama a la función correspondiente según las alternativas de reemplazoNoOutlier.
-En el primer caso, se evalúa primero posNoOutlierIzq y luego posNoOutlierDer. En el segundo, se invierten. En el restante, se opera con ambas. En todos los escenarios, las complejidades se suman.
+Es decir, también depende de n, con lo cual su complejidad será igualmente O(n).
+Cada iteración reemplaza el elemento original por un No Outlier. Para ello, llama a la función
+correspondiente según las alternativas de reemplazoNoOutlier.
+En el primer caso, se evalúa primero posNoOutlierIzq y luego posNoOutlierDer. En el segundo, se invierten.
+En el restante, se opera con ambas. En todos los escenarios, las complejidades se suman.
+posNoOutlierIzq y posNoOutlierDer tienen una estructura similar, que itera hasta encontrar un No Outlier.
+En el peor caso (todos los outliers pegados), recorrerá cada una (1/20)*n. Luego una posición menos.
+Y así sucesivamente, con "gasto" total en función del tamaño de n.
+Como cada ciclo de estas funciones posNoOutlier computa instrucciones O(1), toda su complejidad será n.
+Así, la complejidad total que venía desde el ciclo externo (recorriendo la lista de atípicos) será n².
 
-OJO... no termina quedando n3?
-porque atipicos.size() depende de n
-en posNoOutlierXXX puede que, si los atípicos están pegados, recorra atipicos.size(), luego atipicos.size()-1, etc: también O(n)
-y esPosAtipica también recorre atipicos.size()
-* se me ocurre una forma "fácil" de arreglarlo tocando el código, pero capaz hay algo que no estoy viendo y se puede arreglar desde acá.
+Finalmente, obtengo un ciclo externo con complejidad n y otro con complejidad n². Como son independientes,
+el programa total será de orden n².
 
+------------------------------------------------------------------------------------------------------------------------
 
+3) Máximos Temporales
 
-void maximosTemporales(vector<int> a, int p, vector<int> tiempos, vector<tuple<int,int>> &intervalos, vector<int> &maximos) {
-    int cota_min = -pow(2, p-1); // O(1)
-    for (int t=0; t<tiempos.size(); t++) { // primer ciclo externo
+void maximosTemporales(vector<int> a, int p, vector<int> tiempos,
+    vector<tuple<int,int>> &intervalos, vector<int> &maximos) {
+
+    int cota_min = -pow(2, p-1);                                                // O(1)
+    for (int t=0; t<tiempos.size(); t++) {                                      // primer ciclo externo
         agregarIntervalos(intervalos, a.size(), tiempos[t]);
     }
-    for (int i=0; i<intervalos.size(); i++) { // segundo ciclo externo
+    for (int i=0; i<intervalos.size(); i++) {                                   // segundo ciclo externo
         agregarMaximo(maximos, a, intervalos[i], cota_min);
     }
 }
 
 void agregarIntervalos(vector<tuple<int,int>> &intervalos, int size, int t) {
-    for (int i=0; i<size; i=i+t) { // primer ciclo interno
-        auto intervalo = make_tuple(i,i+t-1); // O(1)
-        intervalos.push_back(intervalo); // O(1)
+    for (int i=0; i<size; i=i+t) {                                              // primer ciclo interno
+        auto intervalo = make_tuple(i,i+t-1);                                   // O(1)
+        intervalos.push_back(intervalo);                                        // O(1)
     }
 }
 
 void agregarMaximo(vector<int> &maximos, vector<int> &a, tuple<int,int> intervalo, int cota_min) {  
-    int desde = get<0>(intervalo); // O(1)
-    int hasta = get<1>(intervalo); // O(1)
+    int desde = get<0>(intervalo);                                              // O(1)
+    int hasta = get<1>(intervalo);                                              // O(1)
     int maximo = encontrarMaximo(a,desde,hasta,cota_min);
-    maximos.push_back(maximo); // O(1)
+    maximos.push_back(maximo);                                                  // O(1)
 }
 
 int encontrarMaximo(vector<int> &a, int desde, int hasta, int cota_min) {
-    int max = cota_min; // O(1)
-    for (int i=desde; i<=hasta && i<a.size(); i++) { // segundo ciclo interno
-        if (a[i] > max) { // O(1)
-            max = a[i]; // (1)
+    int max = cota_min;                                                         // O(1)
+    for (int i=desde; i<=hasta && i<a.size(); i++) {                            // segundo ciclo interno
+        if (a[i] > max) {                                                       // O(1)
+            max = a[i];                                                         // (1)
         }
     }
-    return max; // O(1)
+    return max;                                                                 // O(1)
 }
 
 Complejidad O(m×n), donde m representa la cantidad de tiempos y n, la longitud del audio.
@@ -147,30 +156,35 @@ Por cada una de esas iteraciones evalúo la función agregarIntervalos, que reco
 De esa primera parte obtengo complejidad m×n.
 
 En el segundo ciclo externo, recorro esta vez la cantidad de intervalos, para lo cual hay que entender cómo se computan.
-En el peor caso, tendré tantos "tiempos" como elementos haya en el audio original. Luego, la cantidad de intervalos será igual a la sumatoria de ceil(m/t[i]), donde t[i] representa a cada elemento de la secuencia tiempos.
+En el peor caso, tendré tantos "tiempos" como elementos haya en el audio original. Luego, la cantidad de intervalos será
+igual a la sumatoria de ceil(m/t[i]), donde t[i] representa a cada elemento de la secuencia tiempos.
 Como tenemos una sumatoria de valores de orden m, el resultado será también O(m).
 
-Me fijo entonces en el llamado a la función agregarMaximo, que concentra instrucciones O(1) y una nueva evaluación: encontrarMaximo, la cual en el peor caso itera hasta el final de la lista (O(n)).
+Me fijo entonces en el llamado a la función agregarMaximo, que concentra instrucciones O(1) y una nueva evaluación:
+encontrarMaximo, la cual en el peor caso itera hasta el final de la lista (O(n)).
 Es decir, de toda esta segunda parte llego también a una complejidad m×n.
 
-Como los dos grandes ciclos son independientes, la complejidad total saldrá de la suma de sus complejidades y quedará asimismo m×n.
+Como los dos grandes ciclos son independientes, la complejidad total saldrá de la suma de sus complejidades y
+quedará asimismo m×n.
 
+------------------------------------------------------------------------------------------------------------------------
 
+4) Magnitud Absoluta Máxima
 
 void magnitudAbsolutaMaxima(audio a, int canal, int profundidad, vector<int> &maximos, vector<int> &posicionesMaximos) {
-    for (int i = 0; i < canal; ++i) { // ciclo externo
-        maximos.push_back(0); // O(1)
-        posicionesMaximos.push_back(i); // O(1)
+    for (int i = 0; i < canal; ++i) {                                   // ciclo externo
+        maximos.push_back(0);                                           // O(1)
+        posicionesMaximos.push_back(i);                                 // O(1)
         maximosPorCanal(a, canal, i, maximos, posicionesMaximos);
     }
 }
 
 void maximosPorCanal(const audio &a, int canal, int i, vector<int> &maximos, vector<int> &posicionesMaximos) {
-    for (int j = 0; j < a.size() / canal; ++j) { // ciclo interno
-        int posicion = canal * j + i; // O(1)
-        if (abs(maximos[i]) <= abs(a [posicion])){ // O(1)
-            maximos[i] = a[posicion]; // O(1)
-            posicionesMaximos[i] = posicion; // O(1)
+    for (int j = 0; j < a.size() / canal; ++j) {                        // ciclo interno
+        int posicion = canal * j + i;                                   // O(1)
+        if (abs(maximos[i]) <= abs(a [posicion])){                      // O(1)
+            maximos[i] = a[posicion];                                   // O(1)
+            posicionesMaximos[i] = posicion;                            // O(1)
         }
     }
 }
@@ -182,91 +196,97 @@ El ciclo interno recorre los elementos del canal en el que se esté iterando.
 
 Articulando ambos ciclos, obtengo: c*(|a|/c) = |a|. O sea, O(n).
 
+------------------------------------------------------------------------------------------------------------------------
 
+5) Audios Soft y Hard
 
-void audiosSoftYHard(vector<vector<int>> sa, int p, int largo, int umbral, vector<vector<int>> &soft, vector<vector<int>> &hard) {
-    for(int audio=0; audio<sa.size(); audio++) { // ciclo externo
+void audiosSoftYHard(vector<vector<int>> sa, int p, int largo, int umbral,
+    vector<vector<int>> &soft, vector<vector<int>> &hard) {
+
+    for(int audio=0; audio<sa.size(); audio++) {                        // ciclo externo
         if (esSoft(sa[audio],largo,umbral)) {
-            soft.push_back(sa[audio]); // O(1)
+            soft.push_back(sa[audio]);                                  // O(1)
         } else {
-            hard.push_back(sa[audio]); // O(1)
+            hard.push_back(sa[audio]);                                  // O(1)
         }
     }
 }
 
 bool esSoft(vector<int> a, int largo, int umbral) {
     int superiores = 0; // O(1)
-    for (int i=0; i<a.size() && !(superiores > largo); i++) { // ciclo interno
-        if (a[i]>umbral) { // O(1)
-            superiores++; // O(1)
+    for (int i=0; i<a.size() && !(superiores > largo); i++) {           // ciclo interno
+        if (a[i]>umbral) {                                              // O(1)
+            superiores++;                                               // O(1)
         } else {
-            superiores = 0; // O(1)
+            superiores = 0;                                             // O(1)
         }
     }
-    return !(superiores > largo); // O(1)
+    return !(superiores > largo);                                       // O(1)
 }
 
-Complejidad O(m+n), donde m representa la longitud de la lista de audios y n, la longitud de cualquiera de sus audios.
+Complejidad O(m*n), donde m representa la longitud de la lista de audios y n, la longitud de cualquiera de sus audios,
+dado que en el peor caso, todos los audios van a tener la máxima longitud (n).
 
 El ciclo externo recorre la lista de audios (O(m)).
-En cada iteración, se recorre uno de los audios. Cumplidas todas las iteraciones del ciclo externo, se habrá pasado por todos los audios (chequeando todas sus posiciones, ya que estamos en el peor caso).
-Es decir que la complejidad total será la suma de las complejidades de ambos ciclos.
+En cada iteración del ciclo interno, se recorre uno de los audios. Cumplidas todas las iteraciones del ciclo externo,
+se habrá pasado por todos los audios (chequeando todas sus posiciones (O(n)), ya que estamos en el peor caso).
+Es decir que la complejidad total será O(m * n).
 
-En este punto, el ciclo interno arrojaría una complejidad igual a la sumatoria de la longitud de cada audio en cuestión, lo cual no es homogéneo ya que cada tamaño podría diferir.
-Pero en definitiva puede pensarse a esa secuencia de audios como uno con longitud n, otro con longitud α.n (con α, número real), otro igual β.n y así sucesivamente.
-Con esta lógica se obtiene una sumatoria de valores en función de n, lo cual deriva en complejidad O(n).
+------------------------------------------------------------------------------------------------------------------------
 
-Volviendo al plano de ambos ciclos y la sumatoria de sus complejidades, se llega al resultado de O(m+n).
-
-
+6) Reemplazar SubAudio
 
 void reemplazarSubAudio(vector<int> &a, vector<int> a1, vector<int> a2, int p) {
-    vector<int> reemplazo = {}; // O(1)
-    int reinicio; // O(1)
-    int i; // O(1)
-    for (i=0; i<a.size(); i++) { // primer ciclo externo
+    vector<int> reemplazo = {};                                                 // O(1)
+    int reinicio;                                                               // O(1)
+    int i;                                                                      // O(1)
+    for (i=0; i<a.size(); i++) {                                                // primer ciclo externo
         if (!enSubAudio(a,i,a1)) {
-            reemplazo.push_back(a[i]); // O(1)
+            reemplazo.push_back(a[i]);                                          // O(1)
         } else {
-            reinicio = i+a1.size(); // O(1)
-            break; // O(1)
+            reinicio = i+a1.size();                                             // O(1)
+            break;                                                              // O(1)
         }
     }
-    if (i<a.size()) { // O(1)
+    if (i<a.size()) {                                                           // O(1)
         reemplazo = concat(reemplazo,a2); // lineal: O(|reemplazo|+|a2|)
-        for (int j=reinicio; j<a.size(); j++) { // segundo ciclo
-            reemplazo.push_back(a[j]); // O(1)
-        }   
+        for (int j=reinicio; j<a.size(); j++) {                                 // segundo ciclo
+            reemplazo.push_back(a[j]);                                          // O(1)
+        }
     }
-    a = reemplazo; // O(1)
+    a = reemplazo;                                                              // O(1)
 }
 
 bool enSubAudio(vector<int> audio, int i, vector<int> subaudio) {
-    int j=0; // O(1)
+    int j=0;                                                                    // O(1)
     while (j<subaudio.size() && i+j<audio.size() && subaudio[j] == audio[i+j]) { // primer ciclo interno
-        j++; // O(1)
+        j++;                                                                    // O(1)
     }
-    return !(j<subaudio.size()); // O(1)
+    return !(j<subaudio.size());                                                // O(1)
 }
 
 vector<int> concat (vector<int> v1, vector<int> v2) {
-    vector<int> concatenado = v1; // O(1)
+    vector<int> concatenado = v1;                                               // O(1)
     for (int i=0; i < v2.size(); i++) {
-        concatenado.push_back(v2[i]); // O(1)
+        concatenado.push_back(v2[i]);                                           // O(1)
     }
-    return concatenado; // O(1)
+    return concatenado;                                                         // O(1)
 }
 
 Complejidad O(n²), donde n representa la longitud del audio.
 
 En el primer ciclo externo, recorro el tamaño del audio original (n) o paro al encontrar el subaudio.
-El peor caso se dará cuando pase por las n posiciones sin hallar un subaudio y en cada una de esas iteraciones deba recorrer toda la subsecuencia (enSubAudio) para tener un resultado (negativo).
+El peor caso se dará cuando pase por las n posiciones sin hallar un subaudio y en cada una de esas iteraciones
+deba recorrer toda la subsecuencia (enSubAudio) para tener un resultado (negativo).
 
-Ejemplo: a={1,1,1,1}, a1={1,1,1,1,1}. A simple vista se ve que a1 no está incluido en a, pero cada iteración deberá chequear todas las posiciones disponibles.
-Así, en la primera iteración del ciclo externo (i=0), a1 recorrerá cuatro elementos (comparando los cuatro de a) hasta devolver false.
+Ejemplo: a={1,1,1,1}, a1={1,1,1,1,1}. A simple vista se ve que a1 no está incluido en a, pero cada iteración deberá
+chequear todas las posiciones disponibles.
+Así, en la primera iteración del ciclo externo (i=0), a1 recorrerá cuatro elementos (comparando los cuatro de a)
+hasta devolver false.
 En la segunda, tres (ya que comienzo desde i=1). En la tercera, dos. Etcétera.
 
 En general, entonces, tendremos que en cada iteración i, el costo de enSubAudio será n-i.
-Así, la complejidad resultante de ambos ciclos será la sumatoria (desde i=0 hasta n-1) de n-i, cuyo cómputo resulta (1/2)*n² + (1/2)*n. Es decir, O(n²).
+Así, la complejidad resultante de ambos ciclos será la sumatoria (desde i=0 hasta n-1) de n-i, cuyo cómputo
+resulta (1/2)*n² + (1/2)*n. Es decir, O(n²).
 
 No habría peor caso pasando por el segundo ciclo ya que es de orden lineal.

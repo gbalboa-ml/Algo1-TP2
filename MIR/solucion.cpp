@@ -230,67 +230,81 @@ void maximosTemporales(vector<int> a, int p, vector<int> tiempos, vector<tuple<i
 }
 
 // EJ 10
-void limpiarAudio(vector<int> &a, int profundidad, vector<int> &atipicos) {
+void swap(audio &s, int i, int j) {
+    int aux = s[i];
+    s[i] = s[j];
+    s[j] = aux;
+}
+
+int encontrarPosMin(audio &s, int d, int h) {
+    int min = d;
+    for(int i=d+1; i<h; i++) {
+        if (s[i] < s[min]) {
+            min = i;
+        }
+    }
+    return min;
+}
+
+void selectionSort(audio &s) {
+    for(int i=0; i<s.size(); i++) {
+        int posMin = encontrarPosMin(s,i,s.size());
+        swap(s, i, posMin);
+    }
+}
+
+bool esOutlier(audio &audioOrdenado, int n, int percentil) {
+    return abs(n) > abs(audioOrdenado[percentil]);
+}
+
+
+int posNoOutlierIzq (audio &audioOrdenado, audio &a, int i, int percentil) {
+    int resultado = -1;
+    while (i > 0) {
+        i--;
+        if (!esOutlier(audioOrdenado, a[i], percentil)) {
+            resultado = i;
+            break;
+        }
+    }
+    return resultado;
+}
+
+int posNoOutlierDer (audio &audioOrdenado, audio &a, int i, int percentil) {
+    int resultado = -1;
+    while (i < a.size()-1) {
+        i++;
+        if (!esOutlier(audioOrdenado, a[i], percentil)) {
+            resultado = i;
+            break;
+        }
+    }
+    return resultado;
+}
+
+int reemplazoNoOutlier(audio a, int i, audio audioOrdenado, int percentil) {
+    if (posNoOutlierIzq(audioOrdenado,a,i,percentil) < 0) {
+        return a[posNoOutlierDer(audioOrdenado,a,i,percentil)];
+    } else if (posNoOutlierDer(audioOrdenado,a,i,percentil) < 0) {
+        return a[posNoOutlierIzq(audioOrdenado,a,i,percentil)];
+    } else {
+        return (floor((a[posNoOutlierIzq(audioOrdenado,a,i,percentil)] + a[posNoOutlierDer(audioOrdenado,a,i,percentil)]) / 2));
+    }
+}
+
+
+void limpiarAudio(audio &a, int profundidad, vector<int> &atipicos) {
     int percentil = (int) floor(0.95 * a.size());
-    vector<int> audioOrdenado = a;
-    sort(audioOrdenado.begin(), audioOrdenado.end());
+    audio audioOrdenado = a;
+    audio audioLimpio = a;
+    selectionSort(audioOrdenado);
     for (int i=0; i<a.size(); i++) {
         if (esOutlier(audioOrdenado, a[i], percentil)) {
             atipicos.push_back(i);
         }
     }
     for (int i=0; i<atipicos.size(); i++) {
-        a[atipicos[i]] = reemplazoNoOutlier(a,atipicos[i],atipicos);
+        audioLimpio[atipicos[i]] = reemplazoNoOutlier(a,atipicos[i],audioOrdenado,percentil);
     }
+    a = audioLimpio;
 }
-
-bool esOutlier(vector<int> a, int n, int percentil) {
-    if (a.size() == 1) return false;
-    return abs(n) > abs(a[percentil]);
-}
-
-bool esPosAtipica(vector<int> atipicos, int i) {
-    bool posAtipica = false;
-    for (int j=0; j<atipicos.size(); j++) {
-        if (atipicos[j] == i) {
-            posAtipica = true;
-            break;
-        }
-    }
-    return posAtipica;
-}
-
-int posNoOutlierIzq (vector<int> a, int i, vector<int> atipicos) {
-    int resultado = -1; 
-    while (i > 0) {
-        i--;
-        if (!esPosAtipica(atipicos, i)) {
-            resultado = i;
-            break;
-        }
-    }
-    return resultado;
-}
-
-int posNoOutlierDer (vector<int> a, int i, vector<int> atipicos) {
-    int resultado = -1; 
-    while (i < a.size()-1) {
-        i++;
-        if (!esPosAtipica(atipicos, i)) {
-            resultado = i;
-            break;
-        }
-    }
-    return resultado;
-}
-
-int reemplazoNoOutlier(vector<int> a, int i, vector<int> atipicos) {
-    if (posNoOutlierIzq(a,i,atipicos) < 0) {
-        return a[posNoOutlierDer(a,i,atipicos)];
-    } else if (posNoOutlierDer(a,i,atipicos) < 0) {
-        return a[posNoOutlierIzq(a,i,atipicos)];
-    } else {
-        return (floor((a[posNoOutlierIzq(a,i,atipicos)] + a[posNoOutlierDer(a,i,atipicos)]) / 2));
-    }
-}
-
