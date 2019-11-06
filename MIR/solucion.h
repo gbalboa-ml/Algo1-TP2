@@ -21,5 +21,11 @@ int reemplazoNoOutlier(audio a, int i, audio audioOrdenado, int percentil);
 void bajaCalidadAudio(vector<int> &a, int p, int p2);
 vector<int> concat (vector<int> v1, vector<int> v2);
 void maximosTemporales(vector<int> a, int p, vector<int> tiempos, vector<tuple<int,int>> &intervalos, vector<int> &maximos);
+void maximosPorCanal(const audio &a, int canal, int i, vector<int> &maximos, vector<int> &posicionesMaximos);
+void revertirBloque(const audio &a, int canal, audio &revertido, int i);
+void replicarEnCanal(const audio &a, int canal, audio &replica, int i);
+bool enRangoProfundidad(audio vector, int profundidad);
+int limiteProfundidad(int p);
+double disminuirEn(int p, int p2);
 
 #endif //RECUPERACIONINFORMACIONMUSICAL_SOLUCION_H

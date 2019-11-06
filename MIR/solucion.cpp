@@ -5,20 +5,6 @@
 #include <tuple>
 #include <math.h>
 
-bool enRangoProfundidad(audio vector, int profundidad);
-
-int limiteProfundidad(int p);
-
-void replicarEnCanal(const audio &a, int canal, audio &replica, int i);
-
-void revertirBloque(const audio &a, int canal, audio &revertido, int i);
-
-void maximosPorCanal(const audio &a, int canal, int i, vector<int> &maximos, vector<int> &posicionesMaximos);
-
-double disminuirEn(int p, int p2);
-
-vector<int> copyArray(vector<int> &vector);
-
 int abs(int n) {
     if (n<0) {
         return -n;
