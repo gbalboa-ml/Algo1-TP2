@@ -4,32 +4,35 @@
 1) Revertir Audio
 
 audio revertirAudio(audio a, int canal, int profundidad) {
-        audio revertido;                                                // O(1)
-        for (int i = 0; i < a.size() / canal; ++i) {                    // ciclo externo
-            revertirBloque(a, canal, revertido, i);                     // ciclo interno
+        audio revertido;    // O(1)
+        for (int i = 0; i < a.size() / canal; ++i) {    // O(n)
+            revertirBloque(a, canal, revertido, i);     // O(1)
         }
-        return revertido;                                               // O(n)
+        return revertido;   // O(1)
 }
 
 void revertirBloque(const audio &a, int canal, audio &revertido, int i) {
-    for (int j = 0; j < canal; ++j) {                                   // ciclo interno
-        revertido.push_back(a[a.size() - canal * (i+1) + j]);           // O(1)
+    for (int j = 0; j < canal; ++j) {   // O(1)
+        revertido.push_back(a[a.size() - canal * (i+1) + j]);   // O(1)
     }
 }
 
 Complejidad O(n), donde n representa la longitud del audio.
 
-El ciclo externo recorre la cantidad de subsecuencias a invertir (tamaño de la lista / total de canales).
-En cada una de esas iteraciones, el ciclo interno recorre los elementos de esa subsecuencia puntual (tantos como canales
- haya) y los va agregando al audio revertido.
+La función revertirBloque() recorre una cantidad constante de elementos, dado que depende de la cantidad de canales
+del audio. Su complejidad es O(1).
+
+La función revertirAudio() recorre la cantidad de subsecuencias a invertir (tamaño de la lista / total de canales).
+Dado que depende del tamaño del audio dividido una constante (el canal), su complejidad es O(n).
+En cada una de las iteraciones del primer ciclo, se llama a la función revertirBloque(), la cual recorre los elementos
+de esa subsecuencia (tantos como canales haya) y los va agregando al audio revertido.
 
 Así, un audio de tamaño 10 y c=5, hará dos iteraciones en el ciclo externo y cinco en el interno: 2*5 = 10, tamaño del
 audio original.
 En términos generales: (n/c)*c = n.
 
-En el (peor) caso de que el ciclo externo tenga que recorrer toda la lista (se pasa como parámetro c=1), el ciclo
-interno iterará solo una vez y se mantendrá la complejidad.
-Análogamente, en el peor caso del ciclo interno (c=|a|) se estará iterando una sola vez en el externo.
+Para esta función, todos los casos son equivalentes, ya que se recorren todos los elementos del audio solo una vez,
+sin importar la cantidad de canales.
 
 ------------------------------------------------------------------------------------------------------------------------
 
