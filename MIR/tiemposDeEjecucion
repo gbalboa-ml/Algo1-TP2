@@ -152,7 +152,22 @@ int encontrarMaximo(vector<int> &a, int desde, int hasta, int cota_min) {
     return max;                                                                 // O(1)
 }
 
-Complejidad O(m×n), donde m representa la cantidad de tiempos y n, la longitud del audio.
+La complejidad de agregarIntervalos() es O(n), donde n representa la longitud del audio, dado que el ciclo va desde 0
+hasta el tamaño del audio.
+
+El primer ciclo recorre la cantidad de tiempos, por lo que su depende de m, donde m representa la longitud de la
+secuencia de tiempos.
+
+Entonces la complejidad del primer ciclo que llama a agregarIntervalos() termina siendo O(n*m).
+
+Por otro lado, la complejidad del segundo ciclo depende de la cantidad de intervalos, que como está indicado en la
+precondición del TP, su tamaño es la sumatoria desde i = 0 hasta |tiempos| de |a| / tiempos[i]. En el peor caso,
+tiempos [i] tomará su mínimo valor posible, empezando en 1 hasta |tiempos|, dado que tienen que ser todos distintos.
+Esta complejidad no es simple de calcular, dado que no podemos asumir que tiempos[i] = cte, ni lo podemos traducir
+en alguna sumatoria conocida.
+
+
+ es Complejidad O(m×n), donde m representa la cantidad de tiempos y n, la longitud del audio.
 
 En el primer ciclo externo, recorro la cantidad de tiempos (m).
 Por cada una de esas iteraciones evalúo la función agregarIntervalos, que recorre la longitud del audio (n).

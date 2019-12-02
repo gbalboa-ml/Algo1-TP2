@@ -146,7 +146,7 @@ void audiosSoftYHard(vector<audio> sa, int p, int largo, int umbral, vector<audi
 }
 
 // EJ 8
-void reemplazarSubAudio(audio &a, audio a1, audio a2, int p) {
+/*void reemplazarSubAudio(audio &a, audio a1, audio a2, int p) {
     audio reemplazo = {};
     int reinicio;
     int i;
@@ -182,41 +182,70 @@ audio concat (audio v1, audio v2) {
         concatenado.push_back(v2[i]);
     }
     return concatenado;
+}*/
+audio concat (audio v1, audio v2) {
+    audio concatenado = v1;
+    for (int i=0; i < v2.size(); i++) {
+        concatenado.push_back(v2[i]);
+    }
+    return concatenado;
+}
+
+audio subseq(audio a, int inicio, int fin){
+    audio subsecuencia;
+    for (int i = inicio; i <= fin; ++i) {
+        subsecuencia.push_back(a[i]);
+    }
+    return subsecuencia;
+}
+
+void reemplazarSubAudio(audio &a, audio a1, audio a2, int p){
+    int inicio = -1;
+    int fin = -1;
+    int posAudio1 = 0;
+    for (int i = 0; i < a.size(); ++i) {
+        if (a[i] == a1[posAudio1]){
+            if (posAudio1 == 0){
+                inicio = i;
+            }
+            if (posAudio1 == a1.size()-1){
+                fin = posAudio1;
+                break;
+            }
+            posAudio1++;
+        } else {
+            posAudio1 = 0;
+        }
+    }
+    if (fin != -1){
+        audio respuesta = concat(concat(subseq(a, 0, inicio - 1), a2), subseq(a, inicio + a1.size(), a.size()-1));
+        a = respuesta;
+    }
 }
 
 // EJ 9
-int encontrarMaximo(audio &a, int desde, int hasta, int cota_min) {
-    int max = cota_min;
-    for (int i=desde; i<=hasta && i<a.size(); i++) {
-        if (a[i] > max) {
-            max = a[i];
-        }
-    }
-    return max;
-}
-
-void agregarMaximo(vector<int> &maximos, audio &a, tuple<int,int> intervalo, int cota_min) {
-    int desde = get<0>(intervalo);
-    int hasta = get<1>(intervalo);
-    int maximo = encontrarMaximo(a,desde,hasta,cota_min);
-    maximos.push_back(maximo);
-}
-
-void agregarIntervalos(vector<tuple<int,int>> &intervalos, int size, int t) {
-    for (int i=0; i<size; i=i+t) {
-        auto intervalo = make_tuple(i,i+t-1);
-        intervalos.push_back(intervalo);
-    }
-}
-
 void maximosTemporales(audio a, int p, vector<int> tiempos, vector<tuple<int,int>> &intervalos, vector<int> &maximos) {
-
-    int cota_min = - pow(2, p-1);
+            intervalos = {};
+            maximos = {};
+    int cota_min = -pow(2, p-1);
+    int maximoDelIntervalo;
+    int ultimaPosAudio = a.size()-1;
+    int ultimaPosIntervalo;
     for (int t=0; t<tiempos.size(); t++) {
-        agregarIntervalos(intervalos, a.size(), tiempos[t]);
-    }
-    for (int i=0; i<intervalos.size(); i++) {
-        agregarMaximo(maximos, a, intervalos[i], cota_min);
+        for (int j=0; j<a.size(); j++) {
+            if (j%tiempos[t]==0) {
+                        maximoDelIntervalo = cota_min;
+                        ultimaPosIntervalo = j+tiempos[t]-1;
+                tuple<int,int> intervalo = make_tuple(j,ultimaPosIntervalo);
+                intervalos.push_back(intervalo);
+            }
+            if (a[j] > maximoDelIntervalo) {
+                        maximoDelIntervalo = a[j];
+            }
+            if (j==ultimaPosIntervalo || j==ultimaPosAudio) {
+                maximos.push_back(maximoDelIntervalo);
+            }
+        }
     }
 }
 

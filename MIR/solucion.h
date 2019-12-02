@@ -38,6 +38,7 @@ bool enSubAudio(audio a, int i, audio subaudio);
 audio concat (audio v1, audio v2);
 
 // EJ 9
+//void maximosTemporales(audio a, int p, vector<int> tiempos, vector<tuple<int,int>> &intervalos, vector<int> &maximos);
 void maximosTemporales(audio a, int p, vector<int> tiempos, vector<tuple<int,int>> &intervalos, vector<int> &maximos);
 void agregarIntervalos(vector<tuple<int,int>> &intervalos, int size, int t);
 void agregarMaximo(vector<int> &maximos, audio &a, tuple<int,int> intervalo, int cota_min);
